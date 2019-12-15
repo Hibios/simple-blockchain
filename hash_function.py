@@ -18,7 +18,7 @@ memoryUse = py.memory_info()[0]/2.**30
 def hash_func(string_value, algorithm): 
 	if algorithm.lower() == 'sha256':
 		#  SHA256 хеш.
-		hash_object = sha256(bytes(string_value, 'utf-8')).hexdigest()
+		hash_object = sha256(bytes(str(string_value), 'utf-8')).hexdigest()
 		print('\nSHA256 хеш: ' + hash_object)
 	elif algorithm.lower() == 'scrypt':
 		#  SCrypt хеш.
@@ -32,7 +32,7 @@ def hash_func(string_value, algorithm):
 		print('\nФункция не поддерживает данный алгоритм или он написан с ошибкой.')
 
 
-hash_func(input('строка: '), input('алгоритм хеширования: '))
+# hash_func(input('строка: '), input('алгоритм хеширования: '))
 
 print('.'*60, '\nПамяти использовано:', memoryUse)
 print('Загрузка ЦП в момент выполнения программы: ', psutil.cpu_percent(), '%')
