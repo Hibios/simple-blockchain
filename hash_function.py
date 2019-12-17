@@ -30,6 +30,7 @@ def hash_func(string_value, algorithm):
 		print('\nX11 PoW: ' + str(hash_object))
 	else:
 		print('\nФункция не поддерживает данный алгоритм или он написан с ошибкой.')
+	return hash_object
 
 
 # hash_func(input('строка: '), input('алгоритм хеширования: '))

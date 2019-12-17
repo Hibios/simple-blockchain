@@ -23,6 +23,7 @@ def makeBlock(txns, chain):
     blockContents = {u'blockNumber': blockNumber, u'parentHash': parentHash,
                      u'txnCount': len(txns), 'txns': txns}  # Наполняем макет блока данными
     blockHash = hash_func(blockContents, 'sha256')  # Хешируем макет
+    print("Хеш:", blockHash)
     block = {u'hash': blockHash, u'contents': blockContents}  # Создаём новый блок с его хешем и контентом
 
     return block
@@ -53,13 +54,10 @@ def is_valid_txn(txn, state):
     if sum(txn.values()) is not 0:
         return False
 
-    print(txn)
-
     # Убедимся, что транзакция не вызывает овердрафта
+
     for key in txn.keys():
-        print(key)
         if key in state.keys():
-            print(key)
             acctBalance = state[key]
         else:
             acctBalance = 0
@@ -68,11 +66,12 @@ def is_valid_txn(txn, state):
 
     return True
 
+state = {'Alice': 5, 'Bob': 5}
 
 # Набор случайных транзакций
 txnBuffer = [make_transaction(5) for i in range(30)]
 for txn in txnBuffer:
-    print(txn)
+    print(is_valid_txn(txn, state))
 
 print('================TRANSACTIONS TEST=================')
 state = {'Alice': 5, 'Bob': 5}
@@ -88,7 +87,7 @@ print('================CHAIN TEST=================')
 Данная часть кода является жизненным циклом блокчейна, она начнётся здесь как жизнь и будет продолжаться до самой остановки платформы
 """
 state = {u'Alice': 50, u'Bob': 50}  # Начальное состояние системы, деньги на счету в самом начале
-genesisBlockTxns = [state] # Первый блок представляет собой список, с первым состоянием системы
+genesisBlockTxns = [state]  # Первый блок представляет собой список, с первым состоянием системы
 # Содержание первого блока(наполняем блок):
 # -номер
 # -хеш родителя
@@ -115,8 +114,9 @@ blockSizeLimit = 5  # Произвольное количество транза
 
 # tnxBuffer - переменная в которой будут накапливаться транзакции
 
-while len(txnBuffer) > 0:
-    # Цикл начинается если добавилось достаточно транзакций(В нашем случае больше 0)
+print("TXN_BUFF:", txnBuffer)
+print(state)
+while len(txnBuffer) > 0:    # Цикл начинается если добавилось достаточно транзакций(В нашем случае больше 0)
     bufferStartSize = len(txnBuffer)
 
     # Соберите набор допустимых транзакций для включения
@@ -126,12 +126,12 @@ while len(txnBuffer) > 0:
 
         # Следующие строки делают так: первая достаёт по одной транзакции из буфера, а вторая проверяет на правильность
         newTxn = txnBuffer.pop()
-        print("текущая транзакция:", newTxn)
+        print("Текущая транзакция:", newTxn)
         validTxn = is_valid_txn(newTxn, state)  # Возвращает False если транзакция не верна
 
         if validTxn:  # Выполняем если транзакция верная
             txnList.append(newTxn)  # Добавляем в список
-            state = is_valid_txn(newTxn, state)  # Обновляем состояние блокчейна, то есть все кошельки и т.д. после операции
+            state = update_state(newTxn, state)  # Обновляем состояние блокчейна, то есть все кошельки и т.д. после операции
         else:
             # Иначе просто игнорируем транзакцию
             print("Транзакция игнорирована")
@@ -142,4 +142,6 @@ while len(txnBuffer) > 0:
     myBlock = makeBlock(txnList, chain)
     chain.append(myBlock)
 
-    print(chain[0])
+for index, block in enumerate(chain):
+    print("\nБлок номер {}".format(index))
+    print(block)
